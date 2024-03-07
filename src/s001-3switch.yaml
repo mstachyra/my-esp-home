@@ -1,0 +1,29 @@
+substitutions:
+  device_name: s001
+  device_friendly_name: S001
+  comment: Simple Three Switches
+
+<<: !include common-esp12e.yaml
+
+switch:
+  - platform: gpio
+    name: ${upper_devicename} Light 1
+    id: light_1
+    icon: "mdi:lightbulb"
+    pin:
+      number: GPIO14
+      inverted: true
+  - platform: gpio
+    name: ${upper_devicename} Light 2
+    id: light_2
+    icon: "mdi:lightbulb"
+    pin:
+      number: GPIO13
+      inverted: true
+  - platform: gpio
+    name: ${upper_devicename} Light 3
+    id: light_3
+    icon: "mdi:lightbulb"
+    pin:
+      number: GPIO12
+      inverted: true

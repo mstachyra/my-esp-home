@@ -1,0 +1,69 @@
+substitutions:
+  device_name: s002-aquarium
+  device_friendly_name: S002 Aquarium
+  comment: Living Room Aquarium Controller
+
+<<: !include common-esp12e.yaml
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO5
+    id: 'pin_feeder'
+    on_release:
+      then:
+        - switch.turn_off: aquarium_feeder
+  - platform: gpio
+    pin: GPIO14
+    id: 'button_pin'
+    on_multi_click:
+    - timing:
+        - ON for at most 1s
+        - OFF for at most 1s
+        - ON for at most 1s
+        - OFF for at least 0.2s
+      then:
+        - logger.log: "Double Clicked"
+        - switch.toggle: aquarium_light
+    - timing:
+        - ON for 1s to 2s
+        - OFF for at least 0.5s
+      then:
+        - logger.log: "Single Long Clicked"
+        - switch.toggle: aquarium_skimmer
+    - timing:
+        - ON for at most 1s
+        - OFF for at least 0.5s
+      then:
+        - logger.log: "Single Short Clicked"
+        - light.toggle: aquarium_led
+
+output:
+  - platform: esp8266_pwm
+    pin: GPIO15
+    frequency: 10000 Hz
+    id: pwm_output
+
+light:
+  - platform: monochromatic
+    id: aquarium_led
+    output: pwm_output
+    name: ${device_friendly_name} LED Light
+
+switch:
+  - platform: gpio
+    id: aquarium_light
+    pin:
+      number: GPIO13
+      inverted: true
+    name: ${device_friendly_name} Main Light
+  - platform: gpio
+    id: aquarium_skimmer
+    pin:
+      number: GPIO12
+      inverted: true
+    name: ${device_friendly_name} Skimmer
+  - platform: gpio
+    id: aquarium_feeder
+    pin:
+      number: GPIO4
+    name: ${device_friendly_name} Feeder

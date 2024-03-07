@@ -1,0 +1,63 @@
+substitutions:
+  device_name: s003-stairs
+  device_friendly_name: S003 Stairs
+  comment: Two PIR sensor and LED Strip on Stairs
+
+<<: !include common-esp12e.yaml
+
+binary_sensor:
+  - platform: gpio
+    device_class: motion
+    pin:
+      number: GPIO14
+    id: pir_sensor1
+    name: ${device_friendly_name} PIR Sensor 1
+    filters:
+      - delayed_off: 2s
+    on_press:
+      then:
+        - light.turn_on:
+            id: led_strip
+            brightness: 50%
+    on_release:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_off: pir_sensor2
+            then:
+              - light.turn_off: led_strip
+
+  - platform: gpio
+    device_class: motion
+    pin:
+      number: GPIO13
+    id: pir_sensor2
+    name: ${device_friendly_name} PIR Sensor 2
+    filters:
+      - delayed_off: 2s
+    on_press:
+      then:
+        - light.turn_on:
+            id: led_strip
+            brightness: 50%
+    on_release:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_off: pir_sensor1
+            then:
+              - light.turn_off: led_strip
+
+# GPIO15 is 
+output:
+  - platform: esp8266_pwm
+    pin: GPIO15
+    frequency: 10000 Hz
+    id: pwm_output
+
+# Example usage in a light
+light:
+  - platform: monochromatic
+    id: led_strip
+    output: pwm_output
+    name: ${device_friendly_name} LED Strip

@@ -1,0 +1,10 @@
+
+# call by
+# esphome -s dateName (Get-Date).ToString("sMMMHHmmss") ./sXXX-Test.yaml run
+
+substitutions:
+  devicename: $dateName
+  upper_devicename: $dateName
+  comment: Test Code
+
+<<: !include common-esp12e.yaml

@@ -1,0 +1,39 @@
+substitutions:
+  device_name: s004-attic
+  device_friendly_name: S004 Attic
+  comment: DHTSensor and Fan Controller
+
+<<: !include common-esp12e.yaml
+
+# GPIO13 is D7 on the ESP-12 board
+sensor:
+  - platform: dht
+    model: DHT22
+    pin: GPIO13
+    temperature:
+      name: ${device_friendly_name} DHT22 Temperature
+      filters:
+        - offset: -2.3
+    humidity:
+      name: ${device_friendly_name} DHT22 Humidity
+      filters:
+        - offset: 1.0
+    update_interval: 60s
+  - platform: adc
+    pin: A0
+    name: ${device_friendly_name} ADC Reading
+    update_interval: 60s
+
+# GPIO12 is D6 on the ESP-12 board
+output:
+  - platform: esp8266_pwm
+    pin: GPIO12
+    frequency: 20000 Hz
+    id: pwm_output
+    min_power: 0.0
+    max_power: 1.0
+
+fan:
+  - platform: speed
+    output: pwm_output
+    name: ${device_friendly_name} Ventilator
