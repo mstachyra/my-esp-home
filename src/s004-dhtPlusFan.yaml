@@ -32,8 +32,19 @@ output:
     id: pwm_output
     min_power: 0.0
     max_power: 1.0
+    zero_means_zero: true
 
-fan:
-  - platform: speed
-    output: pwm_output
-    name: ${device_friendly_name} Ventilator
+# Component for modifying PWM pin values
+number:
+  - platform: template
+    name: ${device_friendly_name} Ventilator Slider
+    optimistic: true
+    icon: "mdi:fan"
+    min_value: 0
+    max_value: 100
+    step: 5
+    on_value:
+      then:
+        - output.set_level:
+            id: pwm_output
+            level: !lambda "return x/100;"
