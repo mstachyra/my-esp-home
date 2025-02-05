@@ -4,7 +4,8 @@ esphome:
   comment: ${comment}
   
 esp32:
-  board: nodemcu-32s
+  board: nodemcu-32s2
+  variant: esp32s2
   framework:
     type: arduino
 
@@ -13,6 +14,7 @@ logger:
 api:
     
 ota:
+  platform: esphome
 
 wifi:
   ssid: !secret wifi_ssid

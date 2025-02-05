@@ -1,0 +1,7 @@
+[wokwi]
+version = 1
+firmware = 'src\.esphome\build\esphome-s005\.pioenvs\esphome-s005\firmware.bin'
+elf = 'src\.esphome\build\esphome-s005\.pioenvs\esphome-s005\firmware.elf'
+
+[net]
+gateway="ws://localhost:9011"

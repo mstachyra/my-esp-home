@@ -1,0 +1,99 @@
+substitutions:
+  device_name: s005
+  device_friendly_name: S005
+  comment: Example Wokwi simulator
+
+<<: !include common-esp32.yaml
+
+wifi:
+  ssid: "Wokwi-GUEST"
+  password: ""
+
+#   To będzie jako input dla naszych PIR - zmapowane na ESP32
+#   D5	GPIO14	OK	OK	SPI (SCLK)
+#   D6	GPIO12	OK	OK	SPI (MISO)
+#   D7	GPIO13	OK	OK	SPI (MOSI)
+
+#   Wyjścia dla naszych PWM kontrolerów LED
+#   D8	GPIO15	pulled to GND	OK	SPI (CS) - Boot fails if pulled HIGH
+#   D1	GPIO5	OK	OK	often used as SCL (I2C)
+#   D2	GPIO4	OK	OK	often used as SDA (I2C)
+
+binary_sensor:
+  - platform: gpio
+    device_class: motion
+    pin:
+      number: GPIO14
+    id: pir_sensor1
+    name: ${device_friendly_name} PIR Sensor 1
+    filters:
+      - delayed_off: 2s
+    on_press:
+      then:
+        - light.turn_on:
+            id: led_strip1
+            brightness: 70%
+    on_release:
+      then:
+        - light.turn_off: led_strip1
+  - platform: gpio
+    device_class: motion
+    pin:
+      number: GPIO12
+    id: pir_sensor2
+    name: ${device_friendly_name} PIR Sensor 2
+    filters:
+      - delayed_off: 2s
+    on_press:
+      then:
+        - light.turn_on:
+            id: led_strip2
+            brightness: 70%
+    on_release:
+      then:
+        - light.turn_off: led_strip2
+  - platform: gpio
+    device_class: motion
+    pin:
+      number: GPIO13
+    id: pir_sensor3
+    name: ${device_friendly_name} PIR Sensor 3
+    filters:
+      - delayed_off: 2s
+    on_press:
+      then:
+        - light.turn_on:
+            id: led_strip3
+            brightness: 70%
+    on_release:
+      then:
+        - light.turn_off: led_strip3
+
+output:
+  - platform: ledc #esp8266_pwm
+    pin: GPIO15
+    frequency: 10000 Hz
+    id: pwm_output1
+  - platform: ledc #esp8266_pwm
+    pin: GPIO5
+    frequency: 10000 Hz
+    id: pwm_output2
+  - platform: ledc #esp8266_pwm
+    pin: GPIO4
+    frequency: 10000 Hz
+    id: pwm_output3
+
+# Example usage in a light
+light:
+  - platform: monochromatic
+    id: led_strip1
+    output: pwm_output1
+    name: ${device_friendly_name} LED Strip 1
+  - platform: monochromatic
+    id: led_strip2
+    output: pwm_output2
+    name: ${device_friendly_name} LED Strip 2
+  - platform: monochromatic
+    id: led_strip3
+    output: pwm_output3
+    name: ${device_friendly_name} LED Strip 3
